@@ -58,8 +58,14 @@ func (l DefaultLogger) Infof(tmpl string, vals ...interface{}) {
 
 func (l DefaultLogger) Panic(msg string) {
 	l.write(Fatal, msg)
+	if l.triggerPanic {
+		panic(msg)
+	}
 }
 
 func (l DefaultLogger) Panicf(tmpl string, vals ...interface{}) {
 	l.write(Fatal, fmt.Sprintf(tmpl, vals...))
+	if l.triggerPanic {
+		panic(fmt.Sprintf(tmpl, vals...))
+	}
 }
