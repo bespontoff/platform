@@ -1,11 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"platform/logging"
+)
 
 func main() {
-	writeMessage()
+	logger := logging.NewDefaultLogger(logging.Information)
+	writeMessage(logger)
 }
 
-func writeMessage() {
-	fmt.Println("yee man")
+func writeMessage(logger logging.Logger) {
+	logger.Info("go man")
 }
