@@ -2,8 +2,8 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
-	"platform/logging"
 )
 
 type Configuration interface {
@@ -20,16 +20,10 @@ type Configuration interface {
 	GetSection(name string) (section Configuration, found bool)
 }
 
-var logger logging.Logger
-
-func init() {
-	logger = logging.NewDefaultLogger(logging.Debug)
-}
-
 func Load(filename string) (config Configuration, err error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		logger.Panicf("Cant open config file. %v", filename)
+		panic(fmt.Sprintf("Cant open config file. %v", filename))
 	}
 	decoder := json.NewDecoder(file)
 	m := map[string]interface{}{}
