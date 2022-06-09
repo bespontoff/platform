@@ -1,5 +1,11 @@
 package config
 
+import (
+	"encoding/json"
+	"os"
+	"platform/logging"
+)
+
 type Configuration interface {
 	GetString(name string) (value string, found bool)
 	GetInt(name string) (value int, found bool)
@@ -12,4 +18,23 @@ type Configuration interface {
 	GetBoolDefault(name string, defaultValue bool) (value bool)
 
 	GetSection(name string) (section Configuration, found bool)
+}
+
+var logger logging.Logger
+
+func init() {
+	logger = logging.NewDefaultLogger(logging.Debug)
+}
+
+func Load(filename string) (config Configuration, err error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		logger.Panicf("Cant open config file. %v", filename)
+	}
+	decoder := json.NewDecoder(file)
+	m := map[string]interface{}{}
+	if err = decoder.Decode(&m); err == nil {
+		config = &DefaultConfig{configData: m}
+	}
+	return
 }
