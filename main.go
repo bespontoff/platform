@@ -8,11 +8,12 @@ import (
 func main() {
 	var cfg config.Configuration
 	var err error
-	cfg, err = config.Load("config.json")
-	if err != nil {
+
+	if cfg, err = config.Load("config.json"); err != nil {
 		panic(err)
 	}
 	logger := logging.NewDefaultLogger(cfg)
+
 	writeMessage(logger, cfg)
 }
 
