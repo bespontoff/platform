@@ -72,7 +72,7 @@ func (l DefaultLogger) Panicf(tmpl string, vals ...interface{}) {
 }
 
 func NewDefaultLogger(level LogLevel) Logger {
-	flags := log.Lmsgprefix | log.Ltime
+	flags := log.LstdFlags
 	return &DefaultLogger{
 		minLevel: level,
 		loggers: map[LogLevel]*log.Logger{
