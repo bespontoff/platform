@@ -33,7 +33,53 @@ func resolveServiceFromValue(c context.Context, val reflect.Value) (err error) {
 	serviceType := val.Elem().Type()
 	if serviceType == contextReferenceType {
 		val.Elem().Set(reflect.ValueOf(c))
+	} else if binding, found := services[serviceType]; found {
+		if binding.lifecycle == Scoped {
+			resolveScopedService(c, val, binding)
+		} else {
+			val.Elem().Set(invokeFunction(c, binding.factoryFunc)[0])
+		}
+	} else {
+		err = fmt.Errorf("cannot find service %v", serviceType)
 	}
 	return
-	//TODO: THIS FIRST
+}
+
+func resolveScopedService(c context.Context, val reflect.Value, binding BindingMap) {
+	sMap, ok := c.Value(ServiceKey).(serviceMap)
+	if ok {
+		serviceVal, ok := sMap[val.Type()]
+		if ok {
+			serviceVal = invokeFunction(c, binding.factoryFunc)[0]
+			sMap[val.Type()] = serviceVal
+		}
+		val.Elem().Set(serviceVal)
+	} else {
+		val.Elem().Set(invokeFunction(c, binding.factoryFunc)[0])
+	}
+	return
+}
+
+func invokeFunction(c context.Context, f reflect.Value, otherArgs ...interface{}) []reflect.Value {
+	return f.Call(resolveFunctionArguments(c, f, otherArgs...))
+}
+
+func resolveFunctionArguments(c context.Context, f reflect.Value, otherArgs ...interface{}) []reflect.Value {
+	params := make([]reflect.Value, f.Type().NumIn())
+	i := 0
+	if otherArgs != nil {
+		for ; i < len(otherArgs); i++ {
+			params[i] = reflect.ValueOf(otherArgs[i])
+		}
+	}
+	for ; i < len(params); i++ {
+		pType := f.Type().In(i)
+		pVal := reflect.New(pType)
+		err := resolveServiceFromValue(c, pVal)
+		if err != nil {
+			panic(err)
+		}
+		params[i] = pVal.Elem()
+	}
+	return params
 }
