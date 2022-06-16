@@ -11,6 +11,17 @@ func main() {
 	if _, err := services.Call(writeMessage); err != nil {
 		panic(err)
 	}
+	val := struct {
+		message string
+		logging.Logger
+	}{
+		message: "Hello from struct",
+	}
+	err := services.Populate(&val)
+	if err != nil {
+		panic(err)
+	}
+	val.Logger.Debug(val.message)
 }
 
 func writeMessage(logger logging.Logger, cfg config.Configuration) {
