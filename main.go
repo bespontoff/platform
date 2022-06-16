@@ -3,16 +3,20 @@ package main
 import (
 	"platform/config"
 	"platform/logging"
+	"platform/services"
 )
 
 func main() {
 	var cfg config.Configuration
-	var err error
+	var logger logging.Logger
 
-	if cfg, err = config.Load("config.json"); err != nil {
+	services.RegisterDefaultServices()
+	if err := services.GetService(&cfg); err != nil {
 		panic(err)
 	}
-	logger := logging.NewDefaultLogger(cfg)
+	if err := services.GetService(&logger); err != nil {
+		panic(err)
+	}
 
 	writeMessage(logger, cfg)
 }
