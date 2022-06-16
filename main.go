@@ -7,18 +7,10 @@ import (
 )
 
 func main() {
-	var cfg config.Configuration
-	var logger logging.Logger
-
 	services.RegisterDefaultServices()
-	if err := services.GetService(&cfg); err != nil {
+	if _, err := services.Call(writeMessage); err != nil {
 		panic(err)
 	}
-	if err := services.GetService(&logger); err != nil {
-		panic(err)
-	}
-
-	writeMessage(logger, cfg)
 }
 
 func writeMessage(logger logging.Logger, cfg config.Configuration) {
