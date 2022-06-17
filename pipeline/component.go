@@ -18,5 +18,5 @@ func (mwc ComponentContext) GetError() error {
 
 type MiddlewareComponent interface {
 	Init()
-	ProcessRequest(context ComponentContext, next func(componentContext *ComponentContext))
+	ProcessRequest(context *ComponentContext, next func(componentContext *ComponentContext))
 }
