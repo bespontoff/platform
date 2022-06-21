@@ -10,5 +10,9 @@
   },
   "http": {
     "port": 5000
+  },
+  "templates": {
+    "path": "placeholder/*.html",
+    "reload": true
   }
 }
